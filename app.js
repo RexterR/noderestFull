@@ -18,7 +18,10 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 
-app.listen(3000, () => {
+var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8080;
+var ip = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || '0.0.0.0';
+
+app.listen(port, ip,  () => {
   console.log("The server started on port 3000 !!!!!!");
  
   
