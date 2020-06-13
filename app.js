@@ -303,6 +303,10 @@ async function sendMail(user, callback) {
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // true for 465, false for other ports
+     auth: {
+      user: details.email,
+      pass: details.password
+    }
   });
 
   let mailOptions = {
