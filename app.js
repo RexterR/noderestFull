@@ -55,7 +55,7 @@ springedge.messages.send(params, 5000, function (err, response) {
   if (err) {
     return console.log(err);
   }
-  res.send(response);
+  res.send(JSON.stringify(response));
   console.log(response);
 
 });
