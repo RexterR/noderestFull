@@ -314,7 +314,7 @@ async function sendMail(user, callback) {
     to: user.email, // list of receivers
     subject: user.subject, // Subject line
     html: `<p>Hi ${user.name},</p><br>
-    <p>Thanks for joining us</p>`,
+    <p>${user.body}</p>`,
   };
 
   // send mail with defined transport object
