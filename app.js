@@ -3,6 +3,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const multer = require('multer');
+const express = require("express");
+const razorpay = require("razorpay");
+const queryString = require("querystring");
 var springedge = require('springedge');
 const details = require("./details.json");
 
@@ -17,6 +20,8 @@ const TOKEN_PATH = 'token.json';
 const app = express();
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
 
 var port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8080;
 var ip = process.env.OPENSHIFT_NODEJS_IP || process.env.IP || '0.0.0.0';
@@ -323,7 +328,78 @@ async function sendMail(user, callback) {
   callback(info);
 }
 
-
+///////Payment PArt////////////
+const instance = new razorpay({
+  key_id:"rzp_test_r4Rm8PklSkkC6P",
+  key_secret:"cfFPZV5yniu26NuBWS0L9j7U"
+ });
+ 
+ app.get("/order", (req, res) => {
+   res.render("pages/order");
+ });
+ app.post("/order", (req, res) => {
+   var options = {
+     amount: req.body.amount, // amount in the smallest currency unit
+     currency: "INR",
+     receipt: "order_rcptid_11",
+     payment_capture: "0",
+   };
+   instance.orders.create(options, function(err, order) {
+   console.log(order);
+     if (err){
+     console.log(err)
+     res.sendStatus(400);
+     } else{
+     const query = queryString.stringify({
+       order_id: order.id,
+       amount: order.amount,
+       currency: order.currency,
+       name: req.body.name,
+       contactNo: req.body.contactNo,
+       email: req.body.email,
+       address: req.body.address,
+     });
+     res.redirect("/payment/?" + query);
+     }
+   });
+     
+     
+ });
+ /////////////////
+ 
+ app.get("/payment", (req, res) => {
+   res.render("pages/payment", {
+     RAZORPAY_ORDER_ID: req.query.order_id,
+     amount: req.query.amount,
+     currency: req.query.currency,
+     companyName: "Kuldeep WebSoft",
+     description: "KD Websoft pvt ltd. Smart Effective Web & Software solution ",
+     email: req.query.email,
+     customerName: req.query.name,
+     contact: req.query.contactNo,
+     address: req.query.address,
+   });
+ });
+ 
+ /////////////////////////
+ app.post("/paymentres", (req, res) => {
+   console.log(req.body); //need to save it
+   if (req.body.error) {
+     res.render("pages/failure");
+   } else {
+     res.render("pages/success");
+   }
+ });
+ app.get("/paymentfail", (req, res) => {
+   res.render("pages/failure");
+ });
+ /////////////////////////
+ 
+ ////////////
+ app.get("/", function (req, res) {
+   res.render("pages/index");
+ });
+ 
 
 
 
