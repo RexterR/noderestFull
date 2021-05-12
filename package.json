@@ -16,7 +16,7 @@
     "express": "^4.16.4",
     "googleapis": "^39.2.0",
     "multer": "^1.4.2",
-    "nodemailer": "^5.1.1",
+    "nodemailer": "^6.4.16",
     "nodemon": "^2.0.3",
     "springedge": "^1.0.5"
   }
